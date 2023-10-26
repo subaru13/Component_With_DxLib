@@ -15,6 +15,11 @@ const std::weak_ptr<Object>& Component::GetOwner() const
 	return mOwner;
 }
 
+const Component::TypeUniqueID& Component::GetTypeUniqueID() const
+{
+	return mTypeUniqueID;
+}
+
 void Component::SetComponentInfo(const std::weak_ptr<Object>& owner, TypeUniqueID typeUniqueID)
 {
 	mOwner = owner;

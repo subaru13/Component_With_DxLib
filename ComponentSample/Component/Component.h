@@ -2,33 +2,10 @@
 #include <type_traits>
 #include <concepts>
 #include <memory>
+#include "../RuntimeTypeUniqueID.h"
 
 class Object;
 class ComponentContainer;
-
-/*
-	RTTIのかわりの実行時型固有ID
-	2^16個IDを作成することができるので
-	足りなくなることはないと思うが
-	足りなくなったら拡張する
-*/
-class RuntimeTypeUniqueID final
-{
-public:
-	using Value = uint16_t;
-private:
-	RuntimeTypeUniqueID() = delete;
-	~RuntimeTypeUniqueID() = delete;
-private:
-	static inline Value nextId = 0;
-public:
-	template<class T>
-	static Value Get()
-	{
-		static const Value id{ nextId++ };
-		return id;
-	}
-};
 
 class Component
 {
@@ -38,6 +15,20 @@ public:
 public:
 	Component() = default;
 
+	/*
+		継承先で以下のように継承元の型として
+		チェックを成功させる事ができるので
+		仮想化
+
+		class ComponentA : public Component
+		{
+			public:
+			bool CheckUniqueID(TypeUniqueID typeUniqueID) const override
+			{
+				return GetTypeUniqueID() == typeUniqueID ||Component::CheckUniqueID(typeUniqueID) ;
+			}
+		};
+	*/
 	virtual bool CheckUniqueID(TypeUniqueID typeUniqueID) const;
 
 	virtual void Update();
@@ -45,6 +36,7 @@ public:
 	virtual ~Component() = default;
 protected:
 	const std::weak_ptr<Object>& GetOwner() const;
+	const TypeUniqueID& GetTypeUniqueID() const;
 private:
 	std::weak_ptr<Object> mOwner;
 	TypeUniqueID mTypeUniqueID{};

@@ -17,6 +17,7 @@ protected:
 	Handle AddComponent(const std::weak_ptr<Object>& owner)
 	{
 		ComponentPtr component = std::make_shared<T>();
+		// 作成したタイミングで所有者と型情報を埋め込む
 		component->SetComponentInfo(owner, RuntimeTypeUniqueID::Get<T>());
 		return mList.insert(mList.end(), component);
 	}

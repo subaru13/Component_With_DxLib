@@ -16,6 +16,9 @@
     <Filter Include="Component">
       <UniqueIdentifier>{e9b1768d-e1de-480e-95a5-efada0c10622}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Object">
+      <UniqueIdentifier>{019dec41-f42c-4c8c-8112-3b5542ddf97c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -38,8 +41,11 @@
     <ClInclude Include="Component\ComponentContainer.h">
       <Filter>Component</Filter>
     </ClInclude>
-    <ClInclude Include="Object\Object.h">
+    <ClInclude Include="RuntimeTypeUniqueID.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Object.h">
+      <Filter>Object</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

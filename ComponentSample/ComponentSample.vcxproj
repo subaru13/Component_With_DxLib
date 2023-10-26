@@ -142,6 +142,7 @@
     <ClInclude Include="Component\Component.h" />
     <ClInclude Include="Component\ComponentContainer.h" />
     <ClInclude Include="Object\Object.h" />
+    <ClInclude Include="RuntimeTypeUniqueID.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
