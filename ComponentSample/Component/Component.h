@@ -16,16 +16,16 @@ public:
 	Component() = default;
 
 	/*
-		Œp³æ‚ÅˆÈ‰º‚Ì‚æ‚¤‚ÉŒp³Œ³‚ÌŒ^‚Æ‚µ‚Ä
-		ƒ`ƒFƒbƒN‚ğ¬Œ÷‚³‚¹‚é–‚ª‚Å‚«‚é‚Ì‚Å
-		‰¼‘z‰»
+		ç¶™æ‰¿å…ˆã§ä»¥ä¸‹ã®ã‚ˆã†ã«ç¶™æ‰¿å…ƒã®å‹ã¨ã—ã¦
+		ãƒã‚§ãƒƒã‚¯ã‚’æˆåŠŸã•ã›ã‚‹äº‹ãŒã§ãã‚‹ã®ã§
+		ä»®æƒ³åŒ–
 
 		class ComponentA : public Component
 		{
 			public:
 			bool CheckUniqueID(TypeUniqueID typeUniqueID) const override
 			{
-				return GetTypeUniqueID() == typeUniqueID ||Component::CheckUniqueID(typeUniqueID) ;
+				return GetTypeUniqueID() == typeUniqueID ||  RuntimeTypeUniqueID::Get<Component>() == typeUniqueID;
 			}
 		};
 	*/
@@ -51,7 +51,7 @@ concept ComponentType = std::is_same_v<Component, T> || (std::is_base_of_v<Compo
 template<ComponentType T>
 static std::shared_ptr<T> ComponentDynamicCast(const std::shared_ptr<Component>& component)
 {
-	// ‹ó‚ÌƒRƒ“ƒ|[ƒlƒ“ƒg‚Ü‚½‚ÍŒÅ—LIDƒ`ƒFƒbƒN‚Éˆø‚Á‚©‚©‚ç‚È‚¢ê‡‚ÍƒLƒƒƒXƒg¸”s
+	// ç©ºã®ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã¾ãŸã¯å›ºæœ‰IDãƒã‚§ãƒƒã‚¯ã«å¼•ã£ã‹ã‹ã‚‰ãªã„å ´åˆã¯ã‚­ãƒ£ã‚¹ãƒˆå¤±æ•—
 	if ((component == nullptr) ||
 		!component->CheckUniqueID(RuntimeTypeUniqueID::Get<T>()))
 	{
