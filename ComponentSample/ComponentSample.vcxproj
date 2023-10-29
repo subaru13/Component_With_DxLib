@@ -137,6 +137,7 @@
     <ClCompile Include="Component\Component.cpp" />
     <ClCompile Include="Component\ComponentContainer.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Object\Object.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Component\Component.h" />

@@ -2,6 +2,7 @@
 #include <type_traits>
 #include <concepts>
 #include <memory>
+#include <string>
 #include "../RuntimeTypeUniqueID.h"
 
 class Object;
@@ -16,22 +17,27 @@ public:
 	Component() = default;
 
 	/*
-		ç¶™æ‰¿å…ˆã§ä»¥ä¸‹ã®ã‚ˆã†ã«ç¶™æ‰¿å…ƒã®å‹ã¨ã—ã¦
-		ãƒã‚§ãƒƒã‚¯ã‚’æˆåŠŸã•ã›ã‚‹äº‹ãŒã§ãã‚‹ã®ã§
-		ä»®æƒ³åŒ–
+		Œp³æ‚ÅˆÈ‰º‚Ì‚æ‚¤‚ÉŒp³Œ³‚ÌŒ^‚Æ‚µ‚Ä
+		ƒ`ƒFƒbƒN‚ğ¬Œ÷‚³‚¹‚é–‚ª‚Å‚«‚é‚Ì‚Å‰¼‘z‰»
 
-		class ComponentA : public Component
+		class ComponentA : public Component;
+
+		class ComponentB : public ComponentA
 		{
-			public:
+		public:
 			bool CheckUniqueID(TypeUniqueID typeUniqueID) const override
 			{
-				return GetTypeUniqueID() == typeUniqueID ||  RuntimeTypeUniqueID::Get<Component>() == typeUniqueID;
+				return RuntimeTypeUniqueID::Get<ComponentB>() == typeUniqueID ||
+					Component::CheckUniqueID(typeUniqueID);
 			}
 		};
+
 	*/
 	virtual bool CheckUniqueID(TypeUniqueID typeUniqueID) const;
 
 	virtual void Update();
+
+	const std::string& GetName() const;
 
 	virtual ~Component() = default;
 protected:
@@ -40,9 +46,13 @@ protected:
 private:
 	std::weak_ptr<Object> mOwner;
 	TypeUniqueID mTypeUniqueID{};
+	std::string mName{};
 private:
 	friend ComponentContainer;
-	void SetComponentInfo(const std::weak_ptr<Object>& owner, TypeUniqueID typeUniqueID);
+	void SetComponentInfo(
+		const std::weak_ptr<Object>& owner,
+		TypeUniqueID typeUniqueID,
+		const std::string& name);
 };
 
 template<class T>
@@ -51,9 +61,9 @@ concept ComponentType = std::is_same_v<Component, T> || (std::is_base_of_v<Compo
 template<ComponentType T>
 static std::shared_ptr<T> ComponentDynamicCast(const std::shared_ptr<Component>& component)
 {
-	// ç©ºã®ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã¾ãŸã¯å›ºæœ‰IDãƒã‚§ãƒƒã‚¯ã«å¼•ã£ã‹ã‹ã‚‰ãªã„å ´åˆã¯ã‚­ãƒ£ã‚¹ãƒˆå¤±æ•—
+	// ‹ó‚ÌƒRƒ“ƒ|[ƒlƒ“ƒg‚Ü‚½‚ÍŒÅ—LIDƒ`ƒFƒbƒN‚Éˆø‚Á‚©‚©‚ç‚È‚¢ê‡‚ÍƒLƒƒƒXƒg¸”s
 	if ((component == nullptr) ||
-		!component->CheckUniqueID(RuntimeTypeUniqueID::Get<T>()))
+		!component->CheckUniqueID(UNIQUE_ID_OF(T)))
 	{
 		return std::shared_ptr<T>{nullptr};
 	}

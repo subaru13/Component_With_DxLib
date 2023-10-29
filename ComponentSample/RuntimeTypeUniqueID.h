@@ -23,3 +23,5 @@ public:
 		return id;
 	}
 };
+
+#define UNIQUE_ID_OF(T) RuntimeTypeUniqueID::Get<T>()
