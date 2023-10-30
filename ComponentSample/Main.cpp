@@ -24,6 +24,8 @@ public:
 		auto color = ObjectDynamicCast<UIObject>(GetOwner().lock())->GetColor1();
 		DrawQuadrangle(0, 0, 640 + 30, 0, 640 + 30, 720, 0, 720, color, 1);
 	}
+
+	void Foo() const {}
 };
 
 class Component2 : public Component
@@ -51,8 +53,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int)
 
 	std::shared_ptr<UIObject> object = Object::Create<UIObject>();
 
-	object->AddComponent<Component1>("1");
-	object->AddComponent<Component2>("2");
+	object->AddComponent<Component1>();
+	object->AddComponent<Component2>();
+
+	object->GetComponent<Component1>().lock()->Foo();
 
 	// ÉÅÉCÉìÉãÅ[Év
 	while (ProcessMessage() == 0 && CheckHitKey(KEY_INPUT_ESCAPE) == 0)

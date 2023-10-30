@@ -14,14 +14,13 @@ private:
 	using Container = ComponentContainer;
 public:
 	using ComponentPtr = Container::ComponentPtr;
-	using Handle = Container::Handle;
 public:
 	Object() = default;
 
 	template<ComponentType T>
-	Handle AddComponent(const std::string& name)
+	std::weak_ptr<T> AddComponent()
 	{
-		return Container::AddComponent<T>(weak_from_this(), name);
+		return Container::AddComponent<T>(weak_from_this());
 	}
 
 	virtual bool CheckUniqueID(TypeUniqueID typeUniqueID) const;

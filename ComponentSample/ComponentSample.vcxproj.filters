@@ -30,11 +30,11 @@
     <ClCompile Include="Component\Component.cpp">
       <Filter>Component</Filter>
     </ClCompile>
-    <ClCompile Include="Component\ComponentContainer.cpp">
-      <Filter>Component</Filter>
-    </ClCompile>
     <ClCompile Include="Object\Object.cpp">
       <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Component\ComponentContainer.cpp">
+      <Filter>Component</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -6,85 +6,67 @@
 class ComponentContainer
 {
 public:
+	using TypeUniqueID = RuntimeTypeUniqueID::Value;
 	using ComponentPtr = std::shared_ptr<Component>;
-	using List = std::list<ComponentPtr>;
-	using Handle = List::iterator;
-	using SearchMap = std::unordered_map<std::string, Handle>;
+	using UpdateList = std::list<ComponentPtr>;
+	using SearchMap = std::unordered_map<TypeUniqueID, ComponentPtr>;
 protected:
 	ComponentContainer() = default;
 
 	template<ComponentType T>
-	Handle AddComponent(const std::weak_ptr<Object>& owner,
-		const std::string& name)
+	std::weak_ptr<T> AddComponent(const std::weak_ptr<Object>& owner)
 	{
-		// 名前被り or 無効なオーナー
-		if (HasComponent(name) || owner.expired())
+		std::shared_ptr<T> component;
+		// 無効なオーナー or すでに所持している
+		if (HasComponent<T>() || owner.expired())
 		{
-			return mList.end();
+			return component;
 		}
 
-		ComponentPtr component = std::make_shared<T>();
+		TypeUniqueID typeUniqueID = UNIQUE_ID_OF(T);
+		component = std::make_shared<T>();
 		// 作成したタイミングで所有者と型情報を埋め込む
-		component->SetComponentInfo(owner, UNIQUE_ID_OF(T), name);
-		return mSearchMap[name] = mList.insert(mList.end(), component);
+		component->SetComponentInfo(owner, typeUniqueID);
+		// 更新用リストと検索用マップに格納
+		mUpdateList.emplace_back(component);
+		mSearchMap[typeUniqueID] = component;
+		return component;
 	}
 
 public:
-
-	bool HasComponent(const std::string& name) const;
-	bool HasComponent(const Handle& handle) const;
-
 	template<ComponentType T>
-	std::weak_ptr<T> GetComponent(const std::string& name) const
+	bool HasComponent() const
 	{
-		auto it = mSearchMap.find(name);
-		if (it != mSearchMap.end())
-		{
-			return ComponentDynamicCast<T>(*it->second);
-		}
-		return std::weak_ptr<T>{};
-	}
-
-	template<>
-	std::weak_ptr<Component> GetComponent<Component>(const std::string& name) const
-	{
-		auto it = mSearchMap.find(name);
-		if (it != mSearchMap.end())
-		{
-			return (*it->second);
-		}
-		return std::weak_ptr<Component>{};
+		return mSearchMap.contains(UNIQUE_ID_OF(T));
 	}
 
 	template<ComponentType T>
-	std::weak_ptr<T> GetComponent(const Handle& handle) const
+	std::weak_ptr<T> GetComponent() const
 	{
 		std::weak_ptr<T> view{};
-		if (HasComponent(handle))
+		auto it = mSearchMap.find(UNIQUE_ID_OF(T));
+		if (it != mSearchMap.end())
 		{
-			view = ComponentDynamicCast<T>(*handle);
+			view = std::static_pointer_cast<T>(it->second);
 		}
 		return view;
 	}
 
-	template<>
-	std::weak_ptr<Component> GetComponent<Component>(const Handle& handle) const
+	template<ComponentType T>
+	void RemoveComponent()
 	{
-		std::weak_ptr<Component> view{};
-		if (HasComponent(handle))
+		auto it = mSearchMap.find(UNIQUE_ID_OF(T));
+		if (it != mSearchMap.end())
 		{
-			view = (*handle);
+			mUpdateList.remove(it->second);
+			mSearchMap.erase(it);
 		}
-		return view;
 	}
-
-	void RemoveComponent(const std::string& name);
-	void RemoveComponent(Handle handle);
 
 	void UpdateComponents() const;
 
 	virtual ~ComponentContainer() = default;
 private:
-	List mList;
+	UpdateList mUpdateList;
 	SearchMap mSearchMap;
 };
